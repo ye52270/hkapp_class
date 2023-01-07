@@ -133,9 +133,7 @@ function newsDetail() {
   `;
 
   store.feeds.filter((value) => {
-    if (Number(value.id) === Number(id)) {
-      value.read = true;
-    }
+    Number(value.id) === Number(id) || (value.read = true);
   });
 
   container.innerHTML = template.replace('{{__comments__}}', makeComment(newsContent.comments));
