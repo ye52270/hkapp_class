@@ -1,28 +1,61 @@
-const container = document.getElementById('root');
-const ajax = new XMLHttpRequest();
+interface Store {
+  currentPage: number;
+  feeds: NewsFeed[];
+}
+interface News {
+  readonly id: number;
+  readonly time_ago: string;
+  readonly title: string;
+  readonly url: string;
+  readonly user: string;
+  readonly content: string;
+}
+interface NewsFeed extends News {
+  readonly comments_count: number;
+  readonly points: number;
+  read?: boolean;
+}
+
+interface NewsDetail extends News {
+  readonly comments: NewsComment[];
+}
+
+interface NewsComment extends News {
+  readonly comments: NewsComment[];
+  readonly level: number;
+}
+
+const container: HTMLElement | null = document.getElementById('root');
+const ajax: XMLHttpRequest = new XMLHttpRequest();
 const content = document.createElement('div');
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/:id.json';
-const store = {
+const store: Store = {
   currentPage: 1,
   feeds: [],
 };
-function getData(url) {
+
+function getData<AjaxResponse>(url: string): AjaxResponse {
   ajax.open('GET', url, false);
   ajax.send();
 
   return JSON.parse(ajax.response);
 }
 
-function makeFeeds(feeds) {
+function makeFeeds(feeds: NewsFeed[]): NewsFeed[] {
   for (let i = 0; i < feeds.length; i++) {
     feeds[i].read = false;
   }
 
   return feeds;
 }
-function newsFeed() {
-  let newsFeed = store.feeds;
+
+function updateView(html: string): void {
+  container != null ? (container.innerHTML = html) : console.error('최상위 컨테이너가 없습니다.');
+}
+
+function newsFeed(): void {
+  let newsFeed: NewsFeed[] = store.feeds;
   const newsList = [];
   const paging = 9;
   const pageCount =
@@ -55,7 +88,7 @@ function newsFeed() {
   `;
 
   if (newsFeed.length === 0) {
-    newsFeed = store.feeds = makeFeeds(getData(NEWS_URL));
+    newsFeed = store.feeds = makeFeeds(getData<NewsFeed[]>(NEWS_URL));
   }
   for (let i = (store.currentPage - 1) * paging; i < store.currentPage * paging; i++) {
     if (i < newsFeed.length) {
@@ -90,19 +123,21 @@ function newsFeed() {
   template = template.replace('{{__news__feed__}}', newsList.join(''));
   template = template.replace(
     '{{__prev__page__}}',
-    store.currentPage > 1 ? store.currentPage - 1 : store.currentPage
+    String(store.currentPage > 1 ? store.currentPage - 1 : store.currentPage)
   );
   template = template.replace(
     '{{__next__page__}}',
-    store.currentPage < pageCount ? store.currentPage + 1 : pageCount
+    String(store.currentPage < pageCount ? store.currentPage + 1 : pageCount)
   );
 
-  container.innerHTML = template;
+  updateView(template);
+
+  container != null ? container.innerHTML : console.error('최상위 컨테이너가 없습니다.');
 }
 
 function newsDetail() {
-  const id = location.hash.substring(7);
-  const newsContent = getData(CONTENT_URL.replace(':id', id));
+  const id: string = location.hash.substring(7);
+  const newsContent: NewsDetail = getData<NewsDetail>(CONTENT_URL.replace(':id', id));
   let template = `
     <div class="bg-gray-600 min-h-screen pb-8">
     <div class="bg-white text-xl">
@@ -136,31 +171,38 @@ function newsDetail() {
     Number(value.id) === Number(id) && (value.read = true);
   });
 
-  container.innerHTML = template.replace('{{__comments__}}', makeComment(newsContent.comments));
+  updateView(template.replace('{{__comments__}}', makeComment(newsContent.comments)));
 }
 
 window.addEventListener('hashchange', router);
 
-function makeComment(comments, depth = 0) {
+function makeComment(comments: NewsComment[]): string {
   const commentString = [];
   for (let i = 0; i < comments.length; i++) {
+    const {
+      level,
+      time_ago,
+      user,
+      content,
+      comments: [],
+    } = comments[i];
     commentString.push(`
-      <div style="padding-left: ${depth * 40}px;" class="mt-4">
+      <div style="padding-left: ${level * 40}px;" class="mt-4">
         <div class="text-gray-400">
           <i class="fa fa-sort-up mr-2"></i>
-          <strong>${comments[i].user}</strong> ${comments[i].time_ago}
+          <strong>${user}</strong> ${time_ago}
         </div>
-         <p class="text-gray-700">${comments[i].content}</p>
+         <p class="text-gray-700">${content}</p>
       </div>    
      `);
     if (comments[i].comments.length > 0) {
-      commentString.push(makeComment(comments[i].comments, depth + 1));
+      commentString.push(makeComment(comments[i].comments));
     }
   }
   return commentString.join('');
 }
 
-function router() {
+function router(): void {
   const routePath = location.hash;
   const status = routePath.substring(2, 6);
   switch (status) {
