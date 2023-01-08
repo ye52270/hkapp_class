@@ -1,4 +1,6 @@
 import Router from '../src/core/router';
+import { NewsDetailView, NewsFeedView } from './page/index';
+
 /// mix in
 
 // function applyMixins(derivedCtor: any, baseCtors: any[]) {

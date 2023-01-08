@@ -1,4 +1,4 @@
-abstract class View {
+export abstract class View {
   private template: string;
   private renderTemplate: string;
   private container: HTMLElement;

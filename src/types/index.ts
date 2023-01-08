@@ -1,8 +1,13 @@
-interface Store {
+import { View } from '../core/view';
+export const store: Store = {
+  currentPage: 1,
+  feeds: [],
+};
+export interface Store {
   currentPage: number;
   feeds: NewsFeed[];
 }
-interface News {
+export interface News {
   readonly id: number;
   readonly time_ago: string;
   readonly title: string;
@@ -10,22 +15,22 @@ interface News {
   readonly user: string;
   readonly content: string;
 }
-interface NewsFeed extends News {
+export interface NewsFeed extends News {
   readonly comments_count: number;
   readonly points: number;
   read?: boolean;
 }
 
-interface NewsDetail extends News {
+export interface NewsDetail extends News {
   readonly comments: NewsComment[];
 }
 
-interface NewsComment extends News {
+export interface NewsComment extends News {
   readonly comments: NewsComment[];
   readonly level: number;
 }
 
-interface RouteInfo {
+export interface RouteInfo {
   path: string;
   page: View;
 }

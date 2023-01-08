@@ -1,4 +1,9 @@
-class NewsFeedView extends View {
+import { View } from '../core/view';
+import { NewsFeedApi } from '../core/api';
+import { NewsFeed } from '../types';
+import { NEWS_URL } from '../config';
+import { store } from '../types';
+export default class NewsFeedView extends View {
   private api: NewsFeedApi;
   private feeds: NewsFeed[];
   constructor(contaierId: string) {

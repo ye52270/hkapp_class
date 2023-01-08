@@ -1,4 +1,5 @@
-class Api {
+import { NewsFeed, NewsDetail } from '../types';
+export class Api {
   private url: string;
   private ajax: XMLHttpRequest;
   constructor(url: string) {
@@ -11,12 +12,12 @@ class Api {
     return JSON.parse(this.ajax.response);
   }
 }
-class NewsFeedApi extends Api {
+export class NewsFeedApi extends Api {
   getData(): NewsFeed[] {
     return this.getRequest<NewsFeed[]>();
   }
 }
-class NewsDetailApi extends Api {
+export class NewsDetailApi extends Api {
   getData(): NewsDetail {
     return this.getRequest<NewsDetail>();
   }
