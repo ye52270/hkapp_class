@@ -18,7 +18,6 @@ export default class Router {
 
   addRoutePath(path: string, page: View): void {
     this.routeTable.push({ path, page });
-    console.log(this.routeTable);
   }
 
   route(): void {

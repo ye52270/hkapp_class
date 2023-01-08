@@ -1,6 +1,6 @@
 import Router from '../src/core/router';
-import { NewsDetailView, NewsFeedView } from './page/index';
-
+import { NewsDetailView, NewsFeedView } from './page';
+import { Store } from './types';
 /// mix in
 
 // function applyMixins(derivedCtor: any, baseCtors: any[]) {
@@ -41,6 +41,19 @@ import { NewsDetailView, NewsFeedView } from './page/index';
 
 // applyMixins(NewsFeedApi, [Api]);
 // applyMixins(NewsDetailApi, [Api]);
+
+const store: Store = {
+  currentPage: 1,
+  feeds: [],
+};
+
+declare global {
+  interface Window {
+    store: Store;
+  }
+}
+
+window.store = store;
 
 const router = new Router();
 const newsFeedView = new NewsFeedView('root');

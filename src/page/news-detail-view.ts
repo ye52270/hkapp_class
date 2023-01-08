@@ -1,5 +1,5 @@
 import { CONTENT_URL, template } from '../config';
-import { NewsDetail, NewsComment, store } from '../types';
+import { NewsDetail, NewsComment } from '../types';
 import { View } from '../core/view';
 import { NewsDetailApi } from '../core/api';
 
@@ -8,16 +8,16 @@ export default class NewsDetailView extends View {
     super(containerId, template);
   }
 
-  render() {
+  async render(): Promise<void> {
     const id: string = location.hash.substring(7);
     const api: NewsDetailApi = new NewsDetailApi(CONTENT_URL.replace(':id', id));
-    const newsContent: NewsDetail = api.getData();
 
-    store.feeds.filter((value: store.feeds) => {
+    const newsContent: NewsDetail = await api.getData();
+    window.store.feeds.filter((value) => {
       Number(value.id) === Number(id) && (value.read = true);
     });
 
-    this.setTemplateData('currentPage', String(store.currentPage));
+    this.setTemplateData('currentPage', String(window.store.currentPage));
     this.setTemplateData('title', newsContent.title);
     this.setTemplateData('content', newsContent.content);
     this.setTemplateData('comments', this.makeComment(newsContent.comments));

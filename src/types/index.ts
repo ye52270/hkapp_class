@@ -1,8 +1,5 @@
 import { View } from '../core/view';
-export const store: Store = {
-  currentPage: 1,
-  feeds: [],
-};
+
 export interface Store {
   currentPage: number;
   feeds: NewsFeed[];
